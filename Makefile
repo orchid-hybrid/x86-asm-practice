@@ -1,5 +1,5 @@
 BINS := hello1
-LIBCBINS := hello2 primes
+LIBCBINS := hello2 primes fibsiter fibsrecurs
 LIBCBINS2 := hello3 life
 ARCH := 32
 
