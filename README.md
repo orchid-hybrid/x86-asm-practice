@@ -216,6 +216,27 @@ A great makefile
 The Makefile handles all that stuff for you
 
 
+Debugging
+=========
+
+You can still use nasm and debug in gdb by setting break points on line numbers. To do this you have to assemble with debug symbols (nasm -g) and not strip symbols out when you link (ld -s strips them out).
+
+$ make
+nasm -g -f elf print_number.s
+# ld -g -m elf_i386 -s -o print_number print_number.o #this will not work
+ld -g -m elf_i386 -o print_number print_number.o
+
+$ gdb print_number
+(gdb) break 42
+Breakpoint 1 at 0x80480b3: file print_number.s, line 42.
+(gdb) r
+Starting program: /home/dual/Code/x86-asm-practice/print_number 
+Got object file from memory but can't read symbols: File truncated.
+
+Breakpoint 1, 0x080480b3 in print_number ()
+
+
+
 
 Memory Allocation
 =================
