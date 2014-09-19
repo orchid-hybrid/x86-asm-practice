@@ -4,7 +4,7 @@ buflen: dd      10
         section .bss
 num:    resd    1               ; the number to print
 
-ptr:    resd    1               ; where the string starts
+start:    resd    1               ; where the string starts
 len:    resd    1               ; how long the string is
 
 buf:    resb    10
@@ -19,7 +19,7 @@ _start:
         
         mov     eax,4           ; sys_write
         mov     ebx,1           ; stdout
-        mov     ecx,[ptr]       ; ptr points to a buffer
+        mov     ecx,[start]       ; start points to a buffer
         mov     edx,[len]
         int     0x80
         
@@ -32,7 +32,7 @@ print_number:
         ;; Input: a number in the variable num
         ;; Output: writes the string into the end of buf
         ;;         gives the length of the string
-        ;;         gives a pointer (ptr) to the start
+        ;;         gives a pointer (start) to the start
         ;; Uses: ecx to store the pointer
         ;;       eax to hold the number
         ;;       the remainder of division is computed into edx
@@ -55,21 +55,22 @@ print_number:
         mov     eax,[num]
         cdq
 
+        mov     ebx,10
+        
 print_number_loop:
         
         mov     edx,0
-        mov     ebx,10
         div     ebx
         
-        add     dl,0x30
+        add     dl,'0'
         dec     ecx
         mov     byte [ecx],dl
         inc     dword [len]
 
-        cmp     eax,0
+        test    eax,eax
         jne     print_number_loop
 
-        mov     dword [ptr],ecx
+        mov     dword [start],ecx
         
         ret
 
