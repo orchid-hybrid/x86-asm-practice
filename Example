@@ -1,0 +1,28 @@
+BINS := hello1 hello stars
+LIBCBINS := hello2
+ARCH := 32
+
+ifeq ($(ARCH),32)
+  nasm_format := -f elf
+  ld_emulation := -m elf_i386
+else # ifeq 64
+  nasm_format := -f elf64
+  ld_emulation :=
+endif
+
+all: $(BINS) $(LIBCBINS)
+
+$(BINS): %: %.o
+	ld $(ld_emulation) -s -o $@ $@.o
+
+$(LIBCBINS): %: %.o
+	gcc -m32 -c driver.c
+	gcc -m32 -o $@ $@.o driver.o
+
+%.o: %.s
+	nasm $(nasm_format) $<
+
+clean:
+	rm -f $(BINS)
+	shopt -s nullglob && rm -r *.o
+	rm -f *~
