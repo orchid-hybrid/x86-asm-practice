@@ -1,4 +1,4 @@
-BINS := hello1
+BINS := hello1 print_number
 LIBCBINS := hello2 primes fibsiter fibsrecurs
 LIBCBINS2 := hello3 life
 ARCH := 32
@@ -14,17 +14,17 @@ endif
 all: $(BINS) $(LIBCBINS) $(LIBCBINS2)
 
 $(BINS): %: %.o
-	ld $(ld_emulation) -s -o $@ $@.o
+	ld -g $(ld_emulation) -o $@ $@.o
 
 $(LIBCBINS): %: %.o
 	gcc -m32 -c driver.c
-	gcc -m32 -o $@ $@.o driver.o
+	gcc -g -m32 -o $@ $@.o driver.o
 
 $(LIBCBINS2): %: %.o
 	gcc -m32 -o $@ $@.o
 
 %.o: %.s
-	nasm $(nasm_format) $<
+	nasm -g $(nasm_format) $<
 
 clean:
 	rm -f $(BINS) missing_operand_fix
