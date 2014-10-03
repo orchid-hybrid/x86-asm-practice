@@ -53,7 +53,8 @@ print_number:
         mov     dword [len],0
         
         mov     eax,[num]
-        cdq
+        ;cdq
+        xor	edx,edx
 
         mov     ebx,10
         
