@@ -1,62 +1,115 @@
-BUFSIZE         equ     1024
+BUFSIZE equ     1024
 
 section .data
-        nl      db      0x0A
 
 section .bss
-        len     resq    1
         buf     resb    BUFSIZE
-        
+        bufend  resq    1
+
+        bufptr  resq    1
+        buflen  resq    1
+
 section .text
         global _start
 
 _start:
-        mov     rax,0           ; read
+        call    read_data
+.lines:
+        call    find_line
+
+;;; ;;;;;;
+
+        mov     rax,[bufptr]
+        mov     rbx,[buflen]
+        add     rbx,rax
+        call    match_regex
+        test    rcx,rcx
+        jz      .skip
+
+        mov     rax,1
+        mov     rdi,1
+        mov     rsi,[bufptr]
+        mov     rdx,[buflen]
+        syscall
+.skip:   
+
+;;; ;;;;;;;
+
+        ;; move on to the next line
+        mov     rdx,[buflen]
+        add     [bufptr],rdx
+
+        jmp     .lines
+        
+        call    exit_program
+
+read_data:      
+        mov     rax,0
         mov     rdi,0
         mov     rsi,buf
         mov     rdx,BUFSIZE
         syscall
         test    rax,rax
-        jz      done
-        dec     rax             ; strip newline
-        mov     [len],rax
+        jz      exit_program
 
-        mov     rax,buf
-
-        cmp     byte [rax],'m'
-        jne     _start
-        inc     rax
+        add     rax,buf
+        mov     [bufend],rax
+        mov     qword [bufptr],buf
         
-label_o:        
-        cmp     byte [rax],'o'
-        jne     bang
-        inc     rax
-        jmp     label_o
-
-bang:   
-        
-        cmp     byte [rax],'!'
-        jne     _start
-        inc     rax
-        
-        ;; print the string
-        ;; rax=1 (sys_write),  rdi=1 (stdout),  rsi=buffer,  rdx=length
-        mov     rax,1
-        mov     rdi,1
-        mov     rsi,buf
-        mov     rdx,[len]
-        syscall
-
-        mov     rax,1
-        mov     rdi,1
-        mov     rsi,nl
-        mov     rdx,1
-        syscall
-
-        jmp     _start
-
-done:   
-        ;; exit
+        ret
+exit_program:   
         xor     rdi,rdi
         mov     rax,60
         syscall
+
+find_line:
+        mov     rax,[bufptr]
+        mov     rdx,[bufend]
+        
+        cmp     rax,rdx         ;this dies if the file isn't nl terminated
+        jge     exit_program    ;it should be inside the loop for that, but then you'd want to handle that properly, emacs wont let me create a file that doesnt end in newline so I can't test it
+        
+.loop:
+        cmp     byte [rax],0xA
+        je      .done
+        inc     rax
+        jmp     .loop
+.done:
+        mov     rbx,rax
+        sub     rbx,[bufptr]
+        inc     rbx             ;keep the newline
+        mov     [buflen],rbx
+        ret
+
+
+match_regex:
+        cmp     rax,rbx
+        jge     .fail
+        cmp     byte [rax],'m'
+        jne     .fail
+        inc     rax
+        
+.label_o:        
+        cmp     rax,rbx
+        jge     .fail
+        cmp     byte [rax],'o'
+        
+        jne     .bang
+        inc     rax
+        cmp     rax,rbx
+        jge     .fail
+        jmp     .label_o
+
+.bang:   
+        cmp     rax,rbx
+        jge     .fail
+        cmp     byte [rax],'!'
+        jne     .fail
+        inc     rax
+
+        mov     rcx,1
+        ret
+
+.fail:
+        mov     rcx,0
+        ret
