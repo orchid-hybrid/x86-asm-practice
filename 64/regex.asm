@@ -1,4 +1,4 @@
-BUFSIZE equ     1024
+BUFSIZE equ     4096
 
 section .data
 
@@ -83,33 +83,69 @@ find_line:
 
 
 match_regex:
-        cmp     rax,rbx
-        jge     .fail
-        cmp     byte [rax],'m'
-        jne     .fail
-        inc     rax
-        
-.label_o:        
-        cmp     rax,rbx
-        jge     .fail
-        cmp     byte [rax],'o'
-        
-        jne     .bang
-        inc     rax
-        cmp     rax,rbx
-        jge     .fail
-        jmp     .label_o
+        push    rbp
+        mov     rbp,rsp
 
-.bang:   
-        cmp     rax,rbx
-        jge     .fail
-        cmp     byte [rax],'!'
-        jne     .fail
-        inc     rax
+        push    0
+        push    0
+        
+;;; ;;
+        
+  cmp  rax,rbx
+  jge  .fail
+  cmp  byte  [rax],'m'
+  jne  .fail
 
+  inc  rax
+  push rax
+  push .l1
+  jmp  .l0
+.l0:
+.l3:
+  push rax
+  push .l5
+  jmp  .l4
+.l4:
+  cmp  rax,rbx
+  jge  .fail
+  cmp  byte  [rax],'o'
+  jne  .fail
+  inc  rax
+  jmp  .l3
+.l5:
+  jmp  .l2
+.l1:
+  cmp  rax,rbx
+  jge  .fail
+  cmp  byte  [rax],'u'
+  jne  .fail
+  inc  rax
+  cmp  rax,rbx
+  jge  .fail
+  cmp  byte  [rax],'!'
+  jne  .fail
+  inc  rax
+.l2:
+
+
+;;; ;;
+        mov     rsp,rbp
+        pop     rbp
+        
         mov     rcx,1
         ret
 
 .fail:
+        pop     rsi
+        pop     rax
+        test    rsi,rsi
+        jnz     .skip
+        
+        mov     rsp,rbp
+        pop     rbp
+        
         mov     rcx,0
         ret
+
+.skip:
+        jmp     rsi
