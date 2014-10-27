@@ -26,7 +26,7 @@ print_hex:
         jz .done
         mov bl,0xF
         and byte bl,al
-        cmp bl,10
+        cmp bl,9
         jle .skip
         add bl,'a'-'0'-10
 .skip:
