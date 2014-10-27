@@ -5,7 +5,11 @@ section .bss
 section .text
 global _start
 _start:
-        mov rax,0x6549871456122343
+        mov rax,12    ;; brk
+        xor rdi,rdi   ;; 0
+        syscall
+        
+        ;mov rax,0x6549871456122343
         call print_hex
         
         xor rdi,rdi
@@ -22,6 +26,10 @@ print_hex:
         jz .done
         mov bl,0xF
         and byte bl,al
+        cmp bl,10
+        jle .skip
+        add bl,'a'-'0'-10
+.skip:
         add bl,'0'
         mov byte [rsi],bl
         shr rax,4
