@@ -17,6 +17,7 @@ _start:
         syscall
 
 print_hex:
+        push rax
         mov rsi,hex_buffer_end
         mov rdx,0
 .loop:
@@ -44,4 +45,5 @@ print_hex:
         mov rax,1
         mov rdi,1
         syscall
+        pop rax
         ret
