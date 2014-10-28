@@ -256,6 +256,9 @@ Trying to put best "value for money" links first
 http://www.drpaulcarter.com/pcasm/
 A good PDF teaching assembly programming from scratch!
 
+https://www.freebsd.org/doc/en/books/developers-handbook/x86-first-program.html
+Really nice intro on x86 assembly programming with BSD
+
 http://opensecuritytraining.info/IntroX86.html
 http://unixwiz.net/techtips/win32-callconv-asm.html
 teaches how hello world in C works with details on the calling convention
