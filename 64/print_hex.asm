@@ -36,8 +36,6 @@ print_hex:
         shr rax,4
         jmp .loop
 .done:
-        dec rsi
-        inc rdx
         mov byte [rsi],'x'
         dec rsi
         inc rdx
