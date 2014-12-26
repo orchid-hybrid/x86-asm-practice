@@ -267,6 +267,9 @@ second link also explains well about c calling convention
 http://unixwiz.net/techtips/x86-jumps.html
 jump instruction reference
 
+http://0xax.blogspot.co.uk/2014/12/say-hello-to-x8664-assembly-part-7.html
+7 part very clear tutorial
+
 http://cs.lmu.edu/~ray/notes/x86assembly/
 Nice font and CSS page that shows hello world in various settings
 
